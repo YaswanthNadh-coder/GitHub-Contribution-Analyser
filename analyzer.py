@@ -74,6 +74,20 @@ def fetch_github_stats(username: str) -> dict:
     return data["data"]["user"]
 
 
+def check_rate_limit() -> dict:
+    if not GITHUB_TOKEN:
+        return {"limit": "Unknown", "remaining": "Unknown", "resetAt": "N/A"}
+        
+    query = "{ rateLimit { limit remaining resetAt } }"
+    res = requests.post(
+        "https://api.github.com/graphql",
+        json={"query": query}, 
+        headers=HEADERS
+    )
+    res.raise_for_status()
+    return res.json()["data"]["rateLimit"]
+
+
 def compute_language_breakdown(repos: list) -> dict:
     lang_bytes = defaultdict(int)
 
@@ -124,6 +138,20 @@ if __name__ == "__main__":
     username = sys.argv[1] if len(sys.argv) > 1 else "torvalds"
     
     try:
+        # Check rate limits first
+        rate_limit = check_rate_limit()
+        # Parse the resetAt time only if it's a valid date
+        if rate_limit['resetAt'] != "N/A":
+            reset_time = datetime.strptime(rate_limit['resetAt'], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            reset_time = "N/A"
+            
+        print(f"API Rate Limit: {rate_limit['remaining']}/{rate_limit['limit']} (Resets at: {reset_time} UTC)")
+        
+        if rate_limit['remaining'] == 0:
+            print("Rate limit exceeded! Please wait until it resets.")
+            sys.exit(1)
+            
         user = fetch_github_stats(username)
     except Exception as e:
         print(f"Error: {e}")
