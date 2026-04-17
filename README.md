@@ -4,6 +4,7 @@ A lightweight command-line tool written in Python that utilizes the GitHub Graph
 
 ## Features
 
+- **Web Interface:** A stunning, interactive dashboard built with Vanilla JS and Chart.js to visualize statistics with donuts and bar charts.
 - **Profile Overview:** View account creation date, followers, following, and total public owned repositories.
 - **Aggregate Statistics:** Computes total stars, forks, and commits (across default branches) for up to 100 top repositories.
 - **Top Repositories:** Displays the top 5 repositories sorted by stargazer count.
@@ -55,6 +56,15 @@ python analyzer.py <github_username>
 ```
 
 If no username is provided, it will default to `torvalds`.
+
+## Web UI Usage
+
+The project now includes a beautiful web dashboard. To use it:
+
+1. Locate the `index.html` file in the project directory.
+2. Open it directly in any modern web browser (Chrome, Firefox, Edge, etc.).
+3. Enter the Target GitHub Username and your Personal Access Token in the search box.
+4. Click **Analyze** to generate the interactive charts and report.
 
 ### Example Output
 
